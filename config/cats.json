@@ -1,1 +1,16 @@
-{ "cats": [] }
+{
+  "cats": [
+    { "name": "Tygrysek", "trait": "ciekawski psotnik", "note": "kocha wędkę z piórkiem",
+      "coat": { "pattern": "tabby", "fur": "#e7b98a", "stripe": "#a8754c", "white": "#fbefe0" } },
+    { "name": "Łatka", "trait": "przytulaśna", "note": "najchętniej na kolanach",
+      "coat": { "pattern": "calico", "fur": "#fbf4ea", "patch": "#e9a15f", "patch2": "#5b4a44", "white": "#fbf4ea" } },
+    { "name": "Frak", "trait": "mały łowca", "note": "goni każdą kropkę lasera",
+      "coat": { "pattern": "tuxedo", "fur": "#3b3640", "white": "#fbf8f4" } },
+    { "name": "Puszek", "trait": "leniuszek", "note": "drzemka to jego hobby",
+      "coat": { "pattern": "solid", "fur": "#fbf8f4", "white": "#ffffff" } },
+    { "name": "Mgiełka", "trait": "nieśmiała", "note": "podchodź powoli",
+      "coat": { "pattern": "solid", "fur": "#a9adb8", "white": "#d9dce3" } },
+    { "name": "Kluska", "trait": "łakomczuch", "note": "zawsze głodna",
+      "coat": { "pattern": "tabby", "fur": "#f2a65e", "stripe": "#d07a34", "white": "#fde9d2" } }
+  ]
+}

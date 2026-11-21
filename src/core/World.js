@@ -21,7 +21,6 @@ export class World {
     this.cats = new Set();         // Cat entities
     this.toys = new Set();         // things cats chase: lure() -> {point, speed, kind} | null, onSwat(cat, dir)
     this.foods = new Set();        // things cats eat: food() -> {point, amount, kind} | null, eat(cat, dt)
-    this.laserTargets = [];        // static meshes the laser dot can land on
     this.nav = null;               // CafeNav: floor obstacles, perches
     this.factory = null;           // CafeFactory, for spawning / resetting
 
