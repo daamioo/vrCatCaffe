@@ -1,0 +1,6 @@
+{
+  "gravity": 9.81,
+  "room": { "width": 7.0, "depth": 6.0, "height": 2.8 },
+  "player": { "start": [0, 0, 1.7], "startYaw": 0, "moveSpeed": 1.6, "snapTurnDegrees": 30, "grabMove": true },
+  "interaction": { "grabReach": 0.1 }
+}

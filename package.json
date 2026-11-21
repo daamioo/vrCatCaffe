@@ -1,0 +1,14 @@
+{
+  "name": "vr-cat-cafe",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cozy cat café for Meta Quest (WebXR / Three.js): pet cats, play with toys, feed them",
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "start:https": "node tools/serve.mjs --https",
+    "cert": "mkdir -p certs && openssl req -x509 -newkey rsa:2048 -nodes -days 365 -subj /CN=quest-dev -keyout certs/key.pem -out certs/cert.pem",
+    "check": "node tools/check-syntax.mjs",
+    "test": "node --import ./test/register.mjs test/headless.test.mjs"
+  }
+}

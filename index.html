@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kocia Kawiarnia VR</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #f6e7ea; font-family: system-ui, sans-serif; }
+    canvas { display: block; }
+    #status { position: fixed; inset: 0; display: grid; place-items: center; color: #6b4a5a; font-size: 18px; white-space: pre-wrap; text-align: center; padding: 24px; pointer-events: none; }
+    #status[hidden] { display: none; }
+    #status.error { color: #b91c1c; }
+    #hint { position: fixed; left: 12px; bottom: 12px; color: #fff7fa; font-size: 12px; background: rgba(107,74,90,.7); padding: 6px 10px; border-radius: 10px; pointer-events: none; }
+  </style>
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/three.module.js", "three/addons/": "./vendor/three/addons/" } }
+  </script>
+</head>
+<body>
+  <div id="status">Ładowanie…</div>
+  <div id="hint">Tryb testowy na PC: prawy przycisk – rozglądanie · WASD – ruch · najedź kursorem na kota – głaskanie · lewy klik – chwyć · kółko – głębokość · Q/E – przechył · Spacja – spust (laser)</div>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

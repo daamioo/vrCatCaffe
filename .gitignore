@@ -1,0 +1,16 @@
+# local HTTPS certificate + private key (npm run cert)
+certs/
+node_modules/
+# media files: the game is fully procedural, nothing like this belongs in the repo
+*.mp3
+*.ogg
+*.m4a
+*.wav
+*.flac
+*.mp4
+*.webm
+*.png
+*.jpg
+*.jpeg
+*.gif
+.DS_Store
