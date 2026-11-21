@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Entity } from '../core/Entity.js';
 import { CatModel, POSES } from './CatModel.js';
+import { CatPetting } from './Petting.js';
 
 const _v = new THREE.Vector3(), _w = new THREE.Vector3(), _q = new THREE.Quaternion();
 const POSE_KEYS = Object.keys(POSES.stand).filter((k) => k !== 'front' && k !== 'hind');
@@ -63,6 +64,7 @@ export class Cat extends Entity {
     this.pose = { ...POSES.stand, front: null, hind: null };
     this._poseName = 'stand';
     this.look = null;                 // world point to look at
+    this.petting = new CatPetting(this);
     this.reset();
   }
 
@@ -74,6 +76,7 @@ export class Cat extends Entity {
     this.energy = 0.6 + Math.random() * 0.3;
     this.hunger = this.def.hunger ?? (0.25 + p.greed * 0.4);
     this.contentment = 0;
+    if (this.petting) { this.petting.petTime = 0; this.petting.lastStroke = -Infinity; }
     this.trust = 1 - p.shy * 0.8;
     this.boredom = new Map();
     this.path = []; this.hop = null;
@@ -402,7 +405,7 @@ export class Cat extends Entity {
       case 'chase': pose = this._tickChase(dt); break;
       case 'eat': pose = this._tickEat(dt); break;
       case 'treat': pose = this._tickTreat(dt); break;
-      case 'petted': pose = this._tickPetted?.(dt) ?? 'sit'; break;
+      case 'petted': pose = this.petting.tick(dt); break;
       default: break;
     }
     if (this.stateT > this.stateDur && ['idle', 'sit', 'loaf', 'groom', 'nap', 'perch', 'wander', 'leave'].includes(s)) this._needsDecision = true;
@@ -611,6 +614,7 @@ export class Cat extends Entity {
     this._yaw = (this._yaw ?? 0) + (yaw - (this._yaw ?? 0)) * (1 - Math.exp(-5 * dt));
     this._pitch = (this._pitch ?? 0) + (pitch - (this._pitch ?? 0)) * (1 - Math.exp(-5 * dt));
     const neck = { ...P, neckYaw: this._yaw, neckPitch: this._pitch };
+    this.petting?.adjustPose(neck);
 
     // blinking and ear twitches
     this._blinkT += dt / 0.16;

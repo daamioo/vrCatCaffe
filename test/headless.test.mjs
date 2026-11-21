@@ -69,3 +69,58 @@ test('cats: six distinct cats wander, hop onto perches and switch between behavi
   assert.ok(calls < 60);
   void start;
 });
+
+/** Moves `hand` back and forth along a cat's back (head -> tail strokes), in the cat's own frame. */
+async function strokeBack(world, cat, hand, seconds, { speed = 1 } = {}) {
+  const THREE = await import('three');
+  const { BODY_C, BODY_R } = await import('../src/cats/CatModel.js');
+  run(world, seconds, (t) => {
+    const k = (Math.sin(t * Math.PI * speed) + 1) / 2;                       // 0..1..0
+    const lp = new THREE.Vector3(0, BODY_C.y + BODY_R.y + 0.005, THREE.MathUtils.lerp(0.17, -0.04, k));
+    cat.object3D.updateMatrixWorld(true);
+    hand.position.copy(cat.model.b.spine.localToWorld(lp));
+  });
+}
+
+test('petting: open-hand strokes make a cat stop, purr, rumble and get content; it leaves after its tolerance', async () => {
+  const { world, factory, hands: [hand] } = await buildWorld();
+  const latka = factory.colony.byName('Łatka');
+  latka.releasePerch(); latka.pos.set(-0.3, 0, 1.2); latka.setState('wander', { dur: 10 }); latka.goTo({ x: 0.5, z: 1.4 });
+  run(world, 0.5);
+  await strokeBack(world, latka, hand, 6);
+  assert.equal(latka.state, 'petted', `state ${latka.state}`);
+  assert.ok(latka.contentment > 0.5, `contentment ${latka.contentment.toFixed(2)}`);
+  assert.ok(latka.petting.purring, 'purring');
+  assert.ok(hand.pulses > 20, `controller rumble pulses: ${hand.pulses}`);
+  assert.ok(latka.model.b.eyes.scale.y < 0.6, 'squints when content');
+  // grabbing (grip) does not pet
+  const before = latka.contentment;
+  hand.heldControl = { endGrab() {} };          // e.g. holding a toy / control
+  await strokeBack(world, latka, hand, 1);
+  assert.ok(latka.contentment <= before + 1e-6, 'no petting with a full hand');
+  hand.heldControl = null;
+  // stop petting -> goes back to its own business
+  hand.position.set(0, -5, 0);
+  run(world, 6);
+  assert.notEqual(latka.state, 'petted');
+
+  // Frak has little patience: pet him past his tolerance and he walks off
+  const frak = factory.colony.byName('Frak');
+  frak.releasePerch(); frak.pos.set(1.0, 0, 1.9); frak.energy = 0.05; frak.setState('sit', { dur: 100 });
+  await strokeBack(world, frak, hand, frak.p.tolerance + 3);
+  assert.ok(['leave', 'idle', 'wander', 'sit'].includes(frak.state) && frak.leaveCooldown > 0, `Frak walked off (state ${frak.state}, cooldown ${frak.leaveCooldown.toFixed(1)})`);
+});
+
+test('petting: a shy cat flinches from a fast hand but accepts gentle strokes', async () => {
+  const { world, factory, hands: [hand] } = await buildWorld();
+  const mg = factory.colony.byName('Mgiełka');
+  mg.releasePerch(); mg.pos.set(-0.5, 0, -0.8); mg.setState('sit', { dur: 100 }); mg.trust = 0.1;
+  world.rig.position.set(-0.5, 0, -2.0);         // player out of her comfort zone check range
+  run(world, 0.3);
+  await strokeBack(world, mg, hand, 1.5, { speed: 6 });   // fast swipes
+  assert.equal(mg.state, 'leave', `shy cat leaves (state ${mg.state})`);
+  mg.trust = 0.6; mg.leaveCooldown = 0; mg.setState('sit', { dur: 100 }); mg.path = [];
+  await strokeBack(world, mg, hand, 4, { speed: 0.6 });
+  assert.equal(mg.state, 'petted');
+  assert.ok(mg.contentment > 0.3);
+});
