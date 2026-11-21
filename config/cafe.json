@@ -1,7 +1,9 @@
 {
   "room": {
-    "windows": [{ "wall": "left", "u": [-0.5, 1.5], "v": [0.62, 2.1] }],
-    "door": { "wall": "front", "u": -1.5 },
+    "windows": [
+      {"wall": "left", "u": [-0.5, 1.5], "v": [0.62, 2.1]}
+    ],
+    "door": {"wall": "front", "u": -1.5},
     "pendants": [[-2.0, -2.5], [-1.2, -2.5], [-0.4, -2.5]],
     "garlands": [
       [-3.45, -2.92, 3.45, -2.92, 0.22],
@@ -13,36 +15,109 @@
     "warmLights": [[-1.2, -1.7], [1.3, 1.0]]
   },
   "furniture": [
-    { "type": "Rug", "position": [-1.5, 0, 0.6], "radius": 1.05, "color": "#fbe3ea", "trim": "#f6a9bb" },
-    { "type": "Rug", "position": [1.5, 0, 0.8], "radius": 1.05, "color": "#e4f4ec", "trim": "#97d1bb" },
-    { "type": "Counter", "position": [-1.2, 0, -2.62], "size": [3.2, 1.0, 0.6], "pawX": 0.7 },
-    { "type": "CakeDisplay", "position": [-2.25, 1.0, -2.64], "size": [0.9, 0.42] },
-    { "type": "EspressoMachine", "position": [-1.15, 1.0, -2.72] },
-    { "type": "DecoShelf", "position": [1.05, 1.45, -2.88], "length": 1.2 },
-    { "type": "FeedingMat", "position": [1.0, 0, -2.55], "size": [1.0, 0.45] },
-    { "type": "Cabinet", "position": [2.0, 0, -2.74], "size": [0.7, 0.75, 0.42] },
-    { "type": "CatTree", "id": "treeA", "position": [2.95, 0, -2.45], "color": "#d9cff2",
-      "platforms": [{ "x": -0.12, "z": 0.16, "y": 0.42, "r": 0.22 }, { "x": 0.1, "z": -0.08, "y": 0.82, "r": 0.2 }, { "x": -0.04, "z": 0.02, "y": 1.2, "r": 0.23, "bed": true }] },
-    { "type": "WallShelf", "id": "shelf1", "via": "treeA-2", "position": [3.33, 1.45, -1.62], "rotationY": -90, "size": [0.62, 0.32], "cushionColor": "#bfe6d6" },
-    { "type": "WallShelf", "id": "shelf2", "via": "shelf1", "position": [3.33, 1.62, -0.85], "rotationY": -90, "size": [0.62, 0.32], "cushionColor": "#fbd3dc" },
-    { "type": "CatTree", "id": "treeB", "position": [-2.98, 0, 2.45], "color": "#bfe6d6",
-      "platforms": [{ "x": 0.12, "z": -0.14, "y": 0.4, "r": 0.22 }, { "x": -0.02, "z": 0.06, "y": 0.8, "r": 0.23, "bed": true }] },
-    { "type": "WindowSeat", "position": [-3.24, 0, -0.5], "rotationY": 90, "size": [2.0, 0.45, 0.5], "spots": 2 },
-    { "type": "LowTable", "position": [-1.5, 0, 0.6], "radius": 0.45, "height": 0.36, "cushions": 3, "cushionStart": 0 },
-    { "type": "LowTable", "position": [1.5, 0, 0.8], "radius": 0.45, "height": 0.36, "cushions": 3, "cushionStart": 60, "color": "#f3dcc0" },
-    { "type": "CatBed", "position": [2.55, 0, 2.15], "color": "#d9cff2" },
-    { "type": "CatBed", "position": [-2.2, 0, 1.75], "color": "#bfe6d6" },
-    { "type": "Plant", "position": [-3.12, 0, -2.68], "scale": 1.2 },
-    { "type": "Plant", "position": [-3.15, 0, 0.85], "pot": "#d9cff2" },
-    { "type": "Plant", "position": [3.08, 0, 2.62], "scale": 1.2, "pot": "#bfe6d6" },
-    { "type": "Plant", "position": [0.5, 0, 2.7], "pot": "#fbd3dc" }
+    {"type": "Rug", "position": [-1.5, 0, 0.6], "radius": 1.05, "color": "#fbe3ea", "trim": "#f6a9bb"},
+    {"type": "Rug", "position": [1.5, 0, 0.8], "radius": 1.05, "color": "#e4f4ec", "trim": "#97d1bb"},
+    {"type": "Counter", "position": [-1.2, 0, -2.62], "size": [3.2, 1.0, 0.6], "pawX": 0.7},
+    {"type": "CakeDisplay", "position": [-2.25, 1.0, -2.64], "size": [0.9, 0.42]},
+    {"type": "EspressoMachine", "position": [-1.15, 1.0, -2.72]},
+    {"type": "DecoShelf", "position": [1.05, 1.45, -2.88], "length": 1.2},
+    {"type": "FeedingMat", "position": [1.0, 0, -2.55], "size": [1.0, 0.45]},
+    {"type": "Cabinet", "position": [2.0, 0, -2.74], "size": [0.7, 0.75, 0.42]},
+    {
+      "type": "CatTree",
+      "id": "treeA",
+      "position": [2.95, 0, -2.45],
+      "color": "#d9cff2",
+      "platforms": [
+        {"x": -0.12, "z": 0.16, "y": 0.42, "r": 0.22},
+        {"x": 0.1, "z": -0.08, "y": 0.82, "r": 0.2},
+        {"x": -0.04, "z": 0.02, "y": 1.2, "r": 0.23, "bed": true}
+      ]
+    },
+    {
+      "type": "WallShelf",
+      "id": "shelf1",
+      "via": "treeA-2",
+      "position": [3.33, 1.45, -1.62],
+      "rotationY": -90,
+      "size": [0.62, 0.32],
+      "cushionColor": "#bfe6d6"
+    },
+    {
+      "type": "WallShelf",
+      "id": "shelf2",
+      "via": "shelf1",
+      "position": [3.33, 1.62, -0.85],
+      "rotationY": -90,
+      "size": [0.62, 0.32],
+      "cushionColor": "#fbd3dc"
+    },
+    {
+      "type": "CatTree",
+      "id": "treeB",
+      "position": [-2.98, 0, 2.45],
+      "color": "#bfe6d6",
+      "platforms": [
+        {"x": 0.12, "z": -0.14, "y": 0.4, "r": 0.22},
+        {"x": -0.02, "z": 0.06, "y": 0.8, "r": 0.23, "bed": true}
+      ]
+    },
+    {"type": "WindowSeat", "position": [-3.24, 0, -0.5], "rotationY": 90, "size": [2.0, 0.45, 0.5], "spots": 2},
+    {"type": "LowTable", "position": [-1.5, 0, 0.6], "radius": 0.45, "height": 0.36, "cushions": 3, "cushionStart": 0},
+    {"type": "LowTable", "position": [1.5, 0, 0.8], "radius": 0.45, "height": 0.36, "cushions": 3, "cushionStart": 60, "color": "#f3dcc0"},
+    {"type": "CatBed", "position": [2.55, 0, 2.15], "color": "#d9cff2"},
+    {"type": "CatBed", "position": [-2.2, 0, 1.75], "color": "#bfe6d6"},
+    {"type": "Plant", "position": [-3.12, 0, -2.68], "scale": 1.2},
+    {"type": "Plant", "position": [-3.15, 0, 0.85], "pot": "#d9cff2"},
+    {"type": "Plant", "position": [3.08, 0, 2.62], "scale": 1.2, "pot": "#bfe6d6"},
+    {"type": "Plant", "position": [0.5, 0, 2.7], "pot": "#fbd3dc"}
   ],
   "boards": [
-    { "type": "MenuBoard", "position": [-1.2, 1.92, -2.985], "size": [1.5, 0.95] },
-    { "type": "CafeSign", "position": [1.3, 2.28, -2.98], "size": [1.8, 0.45], "frame": "none", "text": "Kocia Kawiarnia", "sub": "„Mruczek” · kawa, ciasto i koty" },
-    { "type": "CatsBoard", "position": [3.48, 1.45, 0.55], "rotationY": -90, "size": [1.3, 0.95] },
-    { "type": "HowToBoard", "position": [3.48, 1.45, 1.9], "rotationY": -90, "size": [1.0, 0.9] }
+    {"type": "MenuBoard", "position": [-1.2, 1.92, -2.985], "size": [1.5, 0.95]},
+    {
+      "type": "CafeSign",
+      "position": [1.3, 2.28, -2.98],
+      "size": [1.8, 0.45],
+      "frame": "none",
+      "text": "Kocia Kawiarnia",
+      "sub": "„Mruczek” · kawa, ciasto i koty"
+    },
+    {"type": "CatsBoard", "position": [3.48, 1.45, 0.55], "rotationY": -90, "size": [1.3, 0.95]},
+    {"type": "HowToBoard", "position": [3.48, 1.45, 1.9], "rotationY": -90, "size": [1.0, 0.9]}
   ],
-  "items": [],
+  "items": [
+    {"class": "FeatherWand", "position": [-1.62, 0.37, 0.78], "rotationY": 200, "color": "#f6a9bb"},
+    {"class": "LaserPointer", "position": [1.3, 0.37, 0.62], "rotationY": 20, "color": "#bfaee8"},
+    {
+      "class": "YarnBall",
+      "position": [0.9, 0.045, 1.55],
+      "radius": 0.045,
+      "color": "#f6a9bb",
+      "restitution": 0.25,
+      "rollFriction": 0.7,
+      "massG": 60,
+      "squash": 0.25
+    },
+    {
+      "class": "YarnBall",
+      "position": [-2.0, 0.045, 1.2],
+      "radius": 0.04,
+      "color": "#97d1bb",
+      "restitution": 0.25,
+      "rollFriction": 0.7,
+      "massG": 50,
+      "squash": 0.25
+    },
+    {
+      "class": "CrinkleBall",
+      "position": [1.62, 0.4, 0.98],
+      "radius": 0.03,
+      "color": "#c9b8f0",
+      "restitution": 0.45,
+      "rollFriction": 0.8,
+      "massG": 15,
+      "squash": 0.6
+    }
+  ],
   "decor": []
 }

@@ -124,3 +124,115 @@ test('petting: a shy cat flinches from a fast hand but accepts gentle strokes', 
   assert.equal(mg.state, 'petted');
   assert.ok(mg.contentment > 0.3);
 });
+
+function grab(world, hand, item) {
+  item.object3D.updateMatrixWorld(true);
+  hand.position.copy(item.worldPointAt ? item.worldPointAt(item.height / 2) : item.object3D.position);
+  hand.gripPressed = true;
+  run(world, 1 / 72);
+  return hand.held === item;
+}
+
+/** Keeps the other cats busy elsewhere so a test can watch one cat. */
+function sideline(factory, keep) {
+  for (const c of factory.colony.cats) if (c !== keep) { c.p.play = 0; c.p.greed = 0; c.hunger = 0; }
+}
+
+test('toys: the feather wand can be grabbed and waved; a playful cat chases and swats the feather', async () => {
+  const THREE = await import('three');
+  const { world, factory, hands: [hand] } = await buildWorld();
+  const wand = [...world.toys].find((t) => t.constructor.name === 'FeatherWand');
+  const tyg = factory.colony.byName('Tygrysek');
+  sideline(factory, tyg);
+  tyg.releasePerch(); tyg.pos.set(0.2, 0, 0.2); tyg.energy = 1; tyg.setState('sit', { dur: 100 });
+  run(world, 1);
+  assert.ok(grab(world, hand, wand), 'wand grabbed');
+  hand.quaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -1.2);     // stick pointing forward-down
+  let minD = Infinity, chased = false;
+  run(world, 20, (t) => {
+    // wave the feather around low over the floor in front of the player
+    hand.position.set(0.3 + Math.sin(t * 2.2) * 0.35, 0.55, 0.9 + Math.cos(t * 1.7) * 0.2);
+    if (tyg.state === 'chase' && tyg.target === wand) chased = true;
+    minD = Math.min(minD, tyg.distanceTo(wand.lure().point));
+  });
+  console.log(`  Tygrysek: closest ${minD.toFixed(2)} m, swats ${wand.swats ?? 0}, feather y ${wand.lure().point.y.toFixed(2)}`);
+  assert.ok(chased, 'cat chases the feather');
+  assert.ok(minD < 0.45, 'cat gets close to the feather');
+  assert.ok((wand.swats ?? 0) >= 1, 'cat swats / pounces on the feather');
+  assert.ok(hand.pulses > 0);
+  // put it down: it lies flat on the floor and the feather rests on the floor
+  hand.gripPressed = false;
+  run(world, 3);
+  assert.ok(wand.body.support, 'wand landed');
+  assert.ok(Math.abs(wand.axisUp.y) < 0.2, 'lies flat');
+  assert.ok(wand.lure().point.y < 0.05, 'feather rests on the floor');
+});
+
+test('toys: laser pointer — trigger switches the dot on, a cat chases the moving dot', async () => {
+  const THREE = await import('three');
+  const { world, factory, hands: [hand] } = await buildWorld();
+  const laser = [...world.toys].find((t) => t.constructor.name === 'LaserPointer');
+  const frak = factory.colony.byName('Frak');
+  sideline(factory, frak);
+  frak.releasePerch(); frak.pos.set(-1.0, 0, -1.2); frak.energy = 1; frak.setState('sit', { dur: 100 });
+  assert.ok(grab(world, hand, laser), 'laser grabbed');
+  assert.equal(laser.lure(), null, 'off until the trigger is pressed');
+  hand.position.set(0, 1.2, 1.4);
+  const aim = new THREE.Vector3();
+  let chased = false, minD = Infinity, dotColorSame = true;
+  const col0 = laser.dot.children[1].material.color.getHex(), op0 = laser.dot.children[0].material.opacity;
+  run(world, 15, (t) => {
+    hand.triggerPressed = true;
+    aim.set(Math.sin(t * 0.8) * 1.2, 0, -0.6 + Math.cos(t * 0.6) * 0.6);   // sweep the dot over the floor
+    const dir = aim.clone().sub(hand.position).normalize();
+    hand.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, -1), dir);   // controller -Z points at it
+    if (frak.state === 'chase' && frak.target === laser) chased = true;
+    const l = laser.lure();
+    if (l) minD = Math.min(minD, frak.distanceTo(l.point));
+    if (laser.dot.children[1].material.color.getHex() !== col0 || laser.dot.children[0].material.opacity !== op0) dotColorSame = false;
+  });
+  const l = laser.lure();
+  assert.ok(l && Math.abs(l.point.y) < 0.01, 'dot on the floor');
+  assert.ok(laser.dot.visible);
+  assert.ok(dotColorSame, 'dot colour and halo opacity never change (no flashing)');
+  assert.ok(chased, 'Frak chases the dot');
+  console.log(`  Frak closest to dot: ${minD.toFixed(2)} m`);
+  assert.ok(minD < 0.4);
+  hand.triggerPressed = false;
+  run(world, 0.1);
+  assert.equal(laser.lure(), null, 'released trigger: dot off');
+  assert.equal(laser.dot.visible, false);
+});
+
+test('toys: balls can be grabbed and thrown, roll to a stop, and cats bat a rolling yarn ball', async () => {
+  const { world, factory, hands: [hand] } = await buildWorld();
+  const yarn = [...world.toys].find((t) => t.constructor.name === 'YarnBall');
+  const crinkle = [...world.toys].find((t) => t.constructor.name === 'CrinkleBall');
+  assert.ok(grab(world, hand, crinkle), 'crinkle ball grabbed');
+  // throw: swing the hand forward and let go
+  run(world, 0.25, (t) => hand.position.set(1.6, 1.0, 1.0 - (t % 1) * 0));
+  const p0 = hand.position.clone();
+  for (let i = 0; i < 10; i++) { hand.position.z -= 0.04; hand.position.y += 0.01; run(world, 1 / 72); }
+  hand.gripPressed = false;
+  run(world, 1 / 72);
+  assert.ok(crinkle.body.velocity.length() > 1.5, `thrown at ${crinkle.body.velocity.length().toFixed(2)} m/s`);
+  run(world, 6);
+  assert.ok(crinkle.object3D.position.distanceTo(p0) > 0.8, 'it flew');
+  assert.ok(crinkle.body.support, 'it came to rest on something');
+
+  const tyg = factory.colony.byName('Tygrysek');
+  sideline(factory, tyg);
+  tyg.releasePerch(); tyg.pos.set(0, 0, -1.0); tyg.energy = 1; tyg.setState('sit', { dur: 100 });
+  let swats = 0;
+  const orig = yarn.onSwat.bind(yarn);
+  yarn.onSwat = (...a) => { swats++; orig(...a); };
+  run(world, 25, (t) => {
+    // keep the yarn rolling around in front of the cat (a player tossing it back now and then)
+    if (yarn.body.velocity.length() < 0.2 && Math.floor(t) % 4 === 0) {
+      yarn.body.support = null; yarn.object3D.position.set(-0.6 + Math.random() * 1.2, 0.3, -0.2);
+      yarn.body.velocity.set((Math.random() - 0.5) * 1.5, 0.5, -0.6 - Math.random() * 0.6);
+    }
+  });
+  console.log(`  yarn swats by Tygrysek: ${swats}`);
+  assert.ok(swats >= 1, 'cat bats the yarn ball');
+});

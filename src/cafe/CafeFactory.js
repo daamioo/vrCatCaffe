@@ -2,7 +2,16 @@ import { CafeNav } from './CafeNav.js';
 import { CafeRoom } from './CafeRoom.js';
 import { CafeInterior } from './Furniture.js';
 import { boardRegistry } from './Boards.js';
+import * as THREE from 'three';
+import { Registry } from '../core/Registry.js';
 import { CatColony } from '../cats/CatColony.js';
+import { YarnBall, CrinkleBall } from '../items/Ball.js';
+import { FeatherWand } from '../items/FeatherWand.js';
+import { LaserPointer } from '../items/LaserPointer.js';
+
+/** Maps the `"class"` strings of cafe.json items to implementations. Add new item types here. */
+export const itemRegistry = new Registry('item class')
+  .register('YarnBall', YarnBall).register('CrinkleBall', CrinkleBall).register('FeatherWand', FeatherWand).register('LaserPointer', LaserPointer);
 
 /** Builds the café from config/cafe.json + config/cats.json. */
 export class CafeFactory {
@@ -19,5 +28,17 @@ export class CafeFactory {
     w.add(new CafeInterior(w, this.cafe.furniture ?? []));
     for (const b of this.cafe.boards ?? []) w.add(boardRegistry.get(b.type)(w, b));
     this.colony = w.add(new CatColony(w));
+    for (const item of this.cafe.items ?? []) this.spawn(item);
+  }
+
+  /** Creates one item from its cafe.json entry, resting in its starting orientation. */
+  spawn(item) {
+    const entity = itemRegistry.create(item.class, this.world, item, item.id ?? item.class);
+    entity.object3D.position.set(...item.position);
+    const yaw = THREE.MathUtils.degToRad(item.rotationY ?? 0);
+    entity.object3D.quaternion.copy(entity.restQuaternion(yaw));
+    entity.spawnItem = item;
+    this.world.add(entity);
+    return entity;
   }
 }
