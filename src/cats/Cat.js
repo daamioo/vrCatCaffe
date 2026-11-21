@@ -526,7 +526,7 @@ export class Cat extends Entity {
     const pt = info.point, mouth = this.mouthWorld(_w);
     this.look = pt.clone();
     const h = pt.y - this.groundY;
-    if (mouth.distanceTo(pt) < 0.13 && !this.hop) {
+    if (mouth.distanceTo(pt) < 0.15 && !this.hop) {
       // nibble it from the hand
       this.path = [];
       this.sub = 'nibble';
@@ -542,7 +542,7 @@ export class Cat extends Entity {
         this.setState('sit', { dur: 3 + Math.random() * 3 });
         return 'sit';
       }
-      return h < 0.3 ? 'eat' : h < 0.55 ? 'rear' : 'sit';
+      return this._reachPose(h);
     }
     this.subT = Math.max(0, this.subT - dt);
     const dCat = this.distanceTo(pt);
@@ -554,8 +554,11 @@ export class Cat extends Entity {
     this.path = [];
     this._faceTo(pt, dt);
     if (h > 0.55) { if (Math.random() < dt * 0.3) this.voice('meow', 0.6, 5); return 'sit'; }      // begging
-    return h < 0.3 ? 'eat' : 'rear';
+    return this._reachPose(h);
   }
+
+  /** Pose that brings the mouth to something at height h above the ground: head down, standing, or up on the hind legs. */
+  _reachPose(h) { return h < 0.13 ? 'eat' : h < 0.32 ? 'stand' : h < 0.56 ? 'rear' : 'sit'; }
 
   // ------------------------------------------------------------------ frame
 

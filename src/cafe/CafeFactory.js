@@ -8,10 +8,15 @@ import { CatColony } from '../cats/CatColony.js';
 import { YarnBall, CrinkleBall } from '../items/Ball.js';
 import { FeatherWand } from '../items/FeatherWand.js';
 import { LaserPointer } from '../items/LaserPointer.js';
+import { FoodBowl, KibbleBag, Treat, TreatJar } from '../items/Food.js';
 
 /** Maps the `"class"` strings of cafe.json items to implementations. Add new item types here. */
 export const itemRegistry = new Registry('item class')
-  .register('YarnBall', YarnBall).register('CrinkleBall', CrinkleBall).register('FeatherWand', FeatherWand).register('LaserPointer', LaserPointer);
+  .register('YarnBall', YarnBall).register('CrinkleBall', CrinkleBall).register('FeatherWand', FeatherWand).register('LaserPointer', LaserPointer)
+  .register('FoodBowl', FoodBowl).register('KibbleBag', KibbleBag).register('Treat', Treat);
+
+/** Fixed fittings from cafe.json `decor` (they take (world, def)). */
+export const decorRegistry = new Registry('decor class').register('TreatJar', TreatJar);
 
 /** Builds the café from config/cafe.json + config/cats.json. */
 export class CafeFactory {
@@ -28,6 +33,7 @@ export class CafeFactory {
     w.add(new CafeInterior(w, this.cafe.furniture ?? []));
     for (const b of this.cafe.boards ?? []) w.add(boardRegistry.get(b.type)(w, b));
     this.colony = w.add(new CatColony(w));
+    this.decor = (this.cafe.decor ?? []).map((d) => w.add(decorRegistry.create(d.class, w, d)));
     for (const item of this.cafe.items ?? []) this.spawn(item);
   }
 

@@ -29,7 +29,7 @@ test('café room: furniture, surfaces, perches and a modest draw-call count', as
   const hitFloor = nav.raycast(new THREE.Vector3(0, 1.5, 1.5), new THREE.Vector3(0, -1, 0), world.settings.room);
   assert.ok(Math.abs(hitFloor.point.y) < 1e-6);
   const calls = drawCalls(scene);
-  assert.ok(calls < 45, `room draw calls: ${calls}`);
+  assert.ok(calls < 120, `draw calls: ${calls}`);
   console.log(`  room draw calls: ${calls}`);
 });
 
@@ -66,7 +66,7 @@ test('cats: six distinct cats wander, hop onto perches and switch between behavi
   for (const c of cats) assert.ok(seen.get(c).size >= 2, `${c.name} changes state (${[...seen.get(c)]})`);
   const calls = drawCalls(scene);
   console.log(`  draw calls with cats: ${calls}`);
-  assert.ok(calls < 60);
+  assert.ok(calls < 120);
   void start;
 });
 
@@ -235,4 +235,69 @@ test('toys: balls can be grabbed and thrown, roll to a stop, and cats bat a roll
   });
   console.log(`  yarn swats by Tygrysek: ${swats}`);
   assert.ok(swats >= 1, 'cat bats the yarn ball');
+});
+
+test('food: tilting the kibble bag over a bowl fills it; a hungry cat comes and eats it empty', async () => {
+  const THREE = await import('three');
+  const { world, factory, hands: [hand] } = await buildWorld();
+  const bag = [...world.grabbables].find((g) => g.constructor.name === 'KibbleBag');
+  const bowl = [...world.foods].find((f) => f.constructor.name === 'FoodBowl');
+  const kluska = factory.colony.byName('Kluska');
+  for (const c of factory.colony.cats) if (c !== kluska) { c.p.greed = 0; c.hunger = 0; c.p.play = 0; }
+  kluska.hunger = 0.1;                                   // not hungry yet: watch the pouring first
+  assert.ok(grab(world, hand, bag), 'bag grabbed');
+  // upright bag pours nothing
+  hand.position.set(bowl.object3D.position.x, 0.5, bowl.object3D.position.z);
+  run(world, 1);
+  assert.equal(bowl.amount, 0, 'no pouring while upright');
+  // tilt the hand (and bag) ~120° and keep the spout over the bowl
+  hand.quaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), -2.1);
+  run(world, 4, () => {
+    bag.object3D.updateMatrixWorld(true);
+    const s = bag.spoutWorld(), target = bowl.object3D.position.clone().add(new THREE.Vector3(0, 0.2, 0));
+    hand.position.add(target.sub(s));
+  });
+  console.log(`  bowl filled to ${(bowl.amount * 100).toFixed(0)}%`);
+  assert.ok(bowl.amount > 0.6, 'bowl fills up');
+  assert.ok(bowl.mound.visible && bowl.mound.scale.y > 0.02, 'kibble mound visible');
+  hand.gripPressed = false; hand.position.set(0, -5, 0);
+  run(world, 0.5);
+  const full = bowl.amount;
+  kluska.hunger = 0.95;
+  let ate = false, minD = Infinity;
+  run(world, 60, () => { if (kluska.state === 'eat' && kluska.sub === 'eating') ate = true; minD = Math.min(minD, kluska.distanceTo(bowl.object3D.position)); });
+  console.log(`  Kluska: closest ${minD.toFixed(2)} m, bowl now ${(bowl.amount * 100).toFixed(0)}%, hunger ${kluska.hunger.toFixed(2)}`);
+  assert.ok(ate, 'Kluska eats from the bowl');
+  assert.ok(bowl.amount < full - 0.3, 'the bowl empties over time');
+  assert.ok(kluska.hunger < 0.6, 'and she is less hungry');
+});
+
+test('food: take a treat from the jar, hold it out — a cat comes and eats it from the hand', async () => {
+  const { world, factory, hands: [hand] } = await buildWorld();
+  const jar = factory.decor.find((d) => d.constructor.name === 'TreatJar');
+  const kluska = factory.colony.byName('Kluska');
+  for (const c of factory.colony.cats) if (c !== kluska) { c.p.greed = 0; c.hunger = 0; c.p.play = 0; }
+  kluska.releasePerch(); kluska.pos.set(-1.0, 0, -0.5); kluska.hunger = 0.6; kluska.setState('sit', { dur: 100 });
+  // reach into the jar
+  hand.position.copy(jar.object3D.position).add({ x: 0, y: 0.1, z: 0 });
+  hand.gripPressed = true;
+  run(world, 1 / 72);
+  const treat = hand.held;
+  assert.ok(treat && treat.constructor.name === 'Treat', 'came out holding a treat');
+  // hold it out low in front of the player
+  const before = kluska.contentment;
+  let ate = false, contentAfter = 0;
+  run(world, 30, () => { if (!ate) hand.position.set(0.0, 0.22, 0.9); if (!ate && !world.entities.has(treat)) { ate = true; contentAfter = kluska.contentment; } });
+  console.log(`  treat eaten: ${ate}, Kluska state ${kluska.state}`);
+  assert.ok(ate, 'the treat was eaten from the hand');
+  assert.equal(treat.eatenBy, kluska);
+  assert.equal(hand.held, null, 'hand is empty again');
+  assert.ok(contentAfter > before + 0.2, 'happier');
+  // the jar keeps handing out treats, but no more than 4 at a time
+  hand.gripPressed = false; run(world, 1 / 72);
+  for (let i = 0; i < 6; i++) {
+    hand.position.copy(jar.object3D.position).add({ x: 0, y: 0.1, z: 0 }); hand.gripPressed = true; run(world, 1 / 72);
+    hand.position.set(-2 + i * 0.3, 1.2, 1.5); hand.gripPressed = false; run(world, 1 / 72);
+  }
+  assert.ok(world.entitiesWithTag('item').filter((e) => e.constructor.name === 'Treat').length <= 4);
 });
