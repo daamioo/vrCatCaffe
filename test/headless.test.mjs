@@ -29,6 +29,43 @@ test('café room: furniture, surfaces, perches and a modest draw-call count', as
   const hitFloor = nav.raycast(new THREE.Vector3(0, 1.5, 1.5), new THREE.Vector3(0, -1, 0), world.settings.room);
   assert.ok(Math.abs(hitFloor.point.y) < 1e-6);
   const calls = drawCalls(scene);
-  assert.ok(calls < 40, `room draw calls: ${calls}`);
+  assert.ok(calls < 45, `room draw calls: ${calls}`);
   console.log(`  room draw calls: ${calls}`);
+});
+
+test('cats: six distinct cats wander, hop onto perches and switch between behaviours', async () => {
+  const { world, factory, scene } = await buildWorld();
+  const cats = factory.colony.cats;
+  assert.equal(cats.length, 6);
+  assert.equal(new Set(cats.map((c) => c.name)).size, 6);
+  const seen = new Map(cats.map((c) => [c, new Set([c.state])]));
+  const perched = new Set(), maxY = new Map();
+  const start = new Map(cats.map((c) => [c, c.pos.clone()]));
+  let travelled = new Map(cats.map((c) => [c, 0])), prev = new Map(cats.map((c) => [c, c.pos.clone()]));
+  run(world, 240, () => {
+    for (const c of cats) {
+      seen.get(c).add(c.state);
+      if (c.onPerch) perched.add(`${c.name}:${c.onPerch.kind}`);
+      maxY.set(c, Math.max(maxY.get(c) ?? 0, c.pos.y));
+      travelled.set(c, travelled.get(c) + c.pos.distanceTo(prev.get(c)));
+      prev.get(c).copy(c.pos);
+      assert.ok(Number.isFinite(c.pos.x) && Number.isFinite(c.pos.y) && Number.isFinite(c.pos.z), `${c.name} position finite`);
+      const r = world.settings.room;
+      assert.ok(Math.abs(c.pos.x) < r.width / 2 - 0.1 && Math.abs(c.pos.z) < r.depth / 2 - 0.1, `${c.name} inside the room`);
+    }
+  });
+  const allStates = new Set([...seen.values()].flatMap((s) => [...s]));
+  console.log('  states seen:', [...allStates].join(', '));
+  console.log('  perched:', [...perched].join(', '));
+  console.log('  travelled:', cats.map((c) => `${c.name} ${travelled.get(c).toFixed(1)}m`).join(', '));
+  for (const st of ['wander', 'sit', 'nap']) assert.ok(allStates.has(st), `some cat ${st}s`);
+  assert.ok(allStates.has('groom') || allStates.has('loaf'), 'grooming or loafing happens');
+  assert.ok(perched.size >= 3, 'cats hop onto several perches');
+  assert.ok([...maxY.values()].some((y) => y > 0.7), 'a cat climbs high (cat tree / shelf)');
+  assert.ok(cats.filter((c) => travelled.get(c) > 1).length >= 4, 'most cats move around');
+  for (const c of cats) assert.ok(seen.get(c).size >= 2, `${c.name} changes state (${[...seen.get(c)]})`);
+  const calls = drawCalls(scene);
+  console.log(`  draw calls with cats: ${calls}`);
+  assert.ok(calls < 60);
+  void start;
 });

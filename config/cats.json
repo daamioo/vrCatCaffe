@@ -1,16 +1,172 @@
 {
   "cats": [
-    { "name": "Tygrysek", "trait": "ciekawski psotnik", "note": "kocha wędkę z piórkiem",
-      "coat": { "pattern": "tabby", "fur": "#e7b98a", "stripe": "#a8754c", "white": "#fbefe0" } },
-    { "name": "Łatka", "trait": "przytulaśna", "note": "najchętniej na kolanach",
-      "coat": { "pattern": "calico", "fur": "#fbf4ea", "patch": "#e9a15f", "patch2": "#5b4a44", "white": "#fbf4ea" } },
-    { "name": "Frak", "trait": "mały łowca", "note": "goni każdą kropkę lasera",
-      "coat": { "pattern": "tuxedo", "fur": "#3b3640", "white": "#fbf8f4" } },
-    { "name": "Puszek", "trait": "leniuszek", "note": "drzemka to jego hobby",
-      "coat": { "pattern": "solid", "fur": "#fbf8f4", "white": "#ffffff" } },
-    { "name": "Mgiełka", "trait": "nieśmiała", "note": "podchodź powoli",
-      "coat": { "pattern": "solid", "fur": "#a9adb8", "white": "#d9dce3" } },
-    { "name": "Kluska", "trait": "łakomczuch", "note": "zawsze głodna",
-      "coat": { "pattern": "tabby", "fur": "#f2a65e", "stripe": "#d07a34", "white": "#fde9d2" } }
+    {
+      "name": "Tygrysek",
+      "trait": "ciekawski psotnik",
+      "note": "kocha wędkę z piórkiem",
+      "coat": {
+        "pattern": "tabby",
+        "fur": "#e7b98a",
+        "stripe": "#a8754c",
+        "white": "#fbefe0",
+        "eye": "#8cc44f",
+        "collar": "#7cc4e8"
+      },
+      "personality": {
+        "energy": 0.8,
+        "play": 0.95,
+        "shy": 0.1,
+        "greed": 0.4,
+        "lazy": 0.2,
+        "tolerance": 25,
+        "affection": 1.0,
+        "voice": 1.1
+      },
+      "start": {
+        "floor": [
+          0.6,
+          0.2
+        ]
+      }
+    },
+    {
+      "name": "Łatka",
+      "trait": "przytulaśna",
+      "note": "najchętniej na kolanach",
+      "coat": {
+        "pattern": "calico",
+        "fur": "#fbf4ea",
+        "patch": "#e9a15f",
+        "patch2": "#5b4a44",
+        "white": "#fbf4ea",
+        "eye": "#e0a43a",
+        "collar": "#f6a9bb"
+      },
+      "personality": {
+        "energy": 0.5,
+        "play": 0.5,
+        "shy": 0,
+        "greed": 0.4,
+        "lazy": 0.4,
+        "tolerance": 120,
+        "affection": 1.4,
+        "voice": 1.0
+      },
+      "start": {
+        "floor": [
+          -0.6,
+          0.0
+        ]
+      }
+    },
+    {
+      "name": "Frak",
+      "trait": "mały łowca",
+      "note": "goni każdą kropkę lasera",
+      "coat": {
+        "pattern": "tuxedo",
+        "fur": "#3b3640",
+        "white": "#fbf8f4",
+        "eye": "#5fb3c9",
+        "collar": "#e5536f"
+      },
+      "personality": {
+        "energy": 1,
+        "play": 1,
+        "shy": 0.2,
+        "greed": 0.3,
+        "lazy": 0.1,
+        "tolerance": 14,
+        "affection": 0.8,
+        "voice": 0.93
+      },
+      "start": {
+        "floor": [
+          0.3,
+          -1.2
+        ]
+      }
+    },
+    {
+      "name": "Puszek",
+      "trait": "leniuszek",
+      "note": "drzemka to jego hobby",
+      "coat": {
+        "pattern": "solid",
+        "fur": "#fbf8f4",
+        "white": "#ffffff",
+        "eye": "#6aa8e8",
+        "collar": "#bfaee8"
+      },
+      "personality": {
+        "energy": 0.25,
+        "play": 0.3,
+        "shy": 0.1,
+        "greed": 0.5,
+        "lazy": 1,
+        "tolerance": 90,
+        "affection": 1.1,
+        "voice": 0.82
+      },
+      "start": {
+        "perch": "treeA-2",
+        "state": "nap"
+      }
+    },
+    {
+      "name": "Mgiełka",
+      "trait": "nieśmiała",
+      "note": "podchodź powoli",
+      "coat": {
+        "pattern": "solid",
+        "fur": "#a9adb8",
+        "white": "#d9dce3",
+        "eye": "#e8c44a",
+        "collar": "#97d1bb"
+      },
+      "personality": {
+        "energy": 0.5,
+        "play": 0.6,
+        "shy": 0.9,
+        "greed": 0.3,
+        "lazy": 0.4,
+        "tolerance": 8,
+        "affection": 1.2,
+        "voice": 1.28
+      },
+      "start": {
+        "perch": "shelf2",
+        "state": "perch"
+      }
+    },
+    {
+      "name": "Kluska",
+      "trait": "łakomczuch",
+      "note": "zawsze głodna",
+      "coat": {
+        "pattern": "tabby",
+        "fur": "#f2a65e",
+        "stripe": "#d07a34",
+        "white": "#fde9d2",
+        "eye": "#9ccb5a",
+        "collar": "#fde07a"
+      },
+      "personality": {
+        "energy": 0.5,
+        "play": 0.5,
+        "shy": 0.1,
+        "greed": 1,
+        "lazy": 0.5,
+        "tolerance": 40,
+        "affection": 1.0,
+        "voice": 0.9
+      },
+      "start": {
+        "floor": [
+          1.0,
+          -1.9
+        ]
+      }
+    }
   ]
 }

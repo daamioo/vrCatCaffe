@@ -2,6 +2,7 @@ import { CafeNav } from './CafeNav.js';
 import { CafeRoom } from './CafeRoom.js';
 import { CafeInterior } from './Furniture.js';
 import { boardRegistry } from './Boards.js';
+import { CatColony } from '../cats/CatColony.js';
 
 /** Builds the café from config/cafe.json + config/cats.json. */
 export class CafeFactory {
@@ -17,5 +18,6 @@ export class CafeFactory {
     w.add(new CafeRoom(w, this.cafe.room));
     w.add(new CafeInterior(w, this.cafe.furniture ?? []));
     for (const b of this.cafe.boards ?? []) w.add(boardRegistry.get(b.type)(w, b));
+    this.colony = w.add(new CatColony(w));
   }
 }

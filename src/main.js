@@ -99,7 +99,7 @@ async function main() {
   });
 
   say('');
-  window.catcafe = { world, factory, THREE, renderer };   // handy for console debugging (renderer.info.render.calls)
+  window.catcafe = { world, factory, THREE, renderer, desktopRig };   // handy for console debugging (renderer.info.render.calls)
 }
 
 main().catch((e) => { console.error(e); say(`Nie udało się uruchomić: ${e.message}`, true); });
