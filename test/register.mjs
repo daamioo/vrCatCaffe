@@ -17,3 +17,10 @@ const makeCanvas = () => ({ width: 300, height: 150, style: {}, getContext: () =
 globalThis.document ??= { createElement: (tag) => (tag === 'canvas' ? makeCanvas() : { style: {}, addEventListener() {}, appendChild() {} }), createElementNS: () => makeCanvas() };
 globalThis.window ??= globalThis;
 globalThis.window.addEventListener ??= () => {};
+
+// Deterministic randomness for the tests: cat behaviour and the tests themselves use
+// Math.random, so a fixed sequence (reset for every world built) makes runs repeatable.
+let seed = 1;
+globalThis.__resetRandom = (s = 12345) => { seed = s; };
+Math.random = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+globalThis.__resetRandom();

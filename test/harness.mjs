@@ -25,6 +25,7 @@ export async function loadConfig() {
 }
 
 export async function buildWorld({ hands = 1 } = {}) {
+  globalThis.__resetRandom?.();               // same random sequence for every test world
   const config = await loadConfig();
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(70, 1, 0.02, 60);
