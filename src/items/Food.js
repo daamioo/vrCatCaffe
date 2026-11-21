@@ -4,6 +4,7 @@ import { Entity } from '../core/Entity.js';
 import { CanvasPanel } from '../ui/CanvasPanel.js';
 import { roundedBox } from '../cafe/shapes.js';
 import { paw, heart } from '../cafe/textures.js';
+import { bake } from '../util/bake.js';
 
 const _s = new THREE.Vector3(), _u = new THREE.Vector3(), _c = new THREE.Vector3();
 const KIBBLE = [0.62, 0.4, 0.24, 1];
@@ -204,6 +205,7 @@ export class TreatJar extends Entity {
     const label = new Label(0.11, 0.06, 'Smakołyki', 'sięgnij do środka', '#fff6e6', '#b0744a');
     label.mesh.position.set(0, 0.075, this.r + 0.002);
     this.object3D.add(glass, base, rim, heap, lid, label.mesh);
+    bake(this.object3D, new Set([glass, label.mesh]));
     this.mouth = new THREE.Vector3();
     this.out = [];
     world.controls.add(this);

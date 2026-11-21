@@ -301,3 +301,45 @@ test('food: take a treat from the jar, hold it out — a cat comes and eats it f
   }
   assert.ok(world.entitiesWithTag('item').filter((e) => e.constructor.name === 'Treat').length <= 4);
 });
+
+test('radio knobs turn; holding the reset button puts the café back (radio keeps its settings)', async () => {
+  const THREE = await import('three');
+  const { world, factory, hands: [hand] } = await buildWorld();
+  const radio = factory.decor.find((d) => d.constructor.name === 'Radio');
+  const button = factory.decor.find((d) => d.constructor.name === 'ResetButton');
+  // volume knob: grip it and circle the hand clockwise (seen from above)
+  const knob = radio.volKnob, c = knob.center.clone();
+  hand.position.copy(c).add(new THREE.Vector3(0, 0.012, 0.01)); hand.gripPressed = true;
+  run(world, 1 / 72);
+  assert.equal(hand.heldControl, knob, 'knob gripped');
+  const vol0 = radio.volume;
+  run(world, 1, (t) => { const a = t * 2.5; hand.position.set(c.x + Math.sin(a) * 0.05, c.y + 0.01, c.z + Math.cos(a) * 0.05); });
+  hand.gripPressed = false; run(world, 1 / 72);
+  assert.notEqual(radio.volume, vol0, `volume changed ${vol0} -> ${radio.volume}`);
+
+  // mess things up: move a toy, fill a bowl, take a treat, move a cat
+  const yarn = [...world.toys].find((t) => t.constructor.name === 'YarnBall');
+  yarn.object3D.position.set(2, 0.05, 2); yarn.body.support = null;
+  const bowl = [...world.foods].find((f) => f.constructor.name === 'FoodBowl'); bowl.addKibble(1);
+  const puszek = factory.colony.byName('Puszek'); puszek.releasePerch(); puszek.pos.set(0, 0, 0); puszek.setState('sit', { dur: 100 });
+  run(world, 1);
+  // press and hold the button with a fingertip
+  button.object3D.updateMatrixWorld(true);
+  hand.touching = true;
+  hand.position.copy(button.object3D.localToWorld(new THREE.Vector3(0, 0, 0.04)));
+  run(world, 0.6);
+  assert.ok(button.progress > 0.3 && button.progress < 1, 'ring filling while held');
+  hand.position.set(0, -5, 0); run(world, 0.5);
+  assert.equal(button.progress, 0, 'letting go early cancels');
+  hand.position.copy(button.object3D.localToWorld(new THREE.Vector3(0, 0, 0.04)));
+  run(world, 1.5);
+  hand.position.set(0, -5, 0); run(world, 0.2);
+  const yarn2 = [...world.toys].filter((t) => t.constructor.name === 'YarnBall').sort((a, b) => a.object3D.position.distanceTo(new THREE.Vector3(0.9, 0.045, 1.55)) - b.object3D.position.distanceTo(new THREE.Vector3(0.9, 0.045, 1.55)))[0];
+  assert.ok(!world.entities.has(yarn), 'old toy replaced');
+  assert.ok(yarn2.object3D.position.distanceTo(new THREE.Vector3(0.9, 0.045, 1.55)) < 0.05, 'yarn back in its spot');
+  assert.ok([...world.foods].filter((f) => f.constructor.name === 'FoodBowl').every((b) => b.amount === 0), 'bowls empty');
+  assert.equal(puszek.onPerch?.id, 'treeA-2', 'Puszek back on top of the cat tree');
+  assert.equal(puszek.state, 'nap');
+  assert.ok(world.entities.has(radio), 'radio kept');
+  assert.equal(radio.volume, knob.step, 'radio keeps its volume');
+});

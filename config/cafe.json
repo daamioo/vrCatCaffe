@@ -123,6 +123,19 @@
     {"class": "KibbleBag", "position": [2.0, 0.75, -2.72], "rotationY": -15}
   ],
   "decor": [
-    {"class": "TreatJar", "position": [0.15, 1.0, -2.48], "maxTreats": 4}
+    {"class": "TreatJar", "position": [0.15, 1.0, -2.48], "maxTreats": 4},
+    {
+      "class": "Radio",
+      "position": [-0.45, 1.0, -2.45],
+      "rotationY": 0,
+      "color": "#97d1bb",
+      "startVolume": 4,
+      "startFreq": 96.0,
+      "stations": [
+        {"freq": 96.0, "name": "Kocie FM", "generator": "lounge", "seed": 11, "bpm": 92},
+        {"freq": 101.5, "name": "Mruczek FM", "generator": "lounge", "seed": 5, "bpm": 80}
+      ]
+    },
+    {"class": "ResetButton", "position": [2.85, 1.2, 2.97], "rotationY": 180, "holdS": 1}
   ]
 }
